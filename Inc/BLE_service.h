@@ -94,16 +94,16 @@ typedef int i32_t;
  * @brief Structure containing acceleration value (in mg) of each axis.
  */
 typedef struct {
-  uint8_t AXIS_X[10];
-  uint8_t AXIS_Y[10];
-  uint8_t AXIS_Z[10];
+  uint8_t AXIS_X[250];
+  uint8_t AXIS_Y[250];
+  uint8_t AXIS_Z[250];
 } AxesRaw_t;
 /** 
  * @brief Structure containing pitch and roll value.
  */
 typedef struct {
-	uint8_t	PITCH[256];
-	uint8_t ROLL[256];
+	uint8_t	PITCH[250];
+	uint8_t ROLL[250];
 }ProcData_t;
 /**
  * @}

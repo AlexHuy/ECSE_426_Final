@@ -478,6 +478,16 @@ void Write_Request_CB(uint16_t handle)
  */
 void Attribute_Modified_CB(uint16_t handle, uint8_t data_length, uint8_t *att_data)
 {
+	uint8_t buff[data_length];
+	for(int i = 0; i < data_length; i++)
+	{
+		buff[i] = att_data[i];
+	}
+	printf("buff[0] = %d\n", buff[0]);
+	printf("buff[1] = %d\n", buff[1]);
+	printf("buff[2] = %d\n", buff[2]);
+	printf("buff[3] = %d\n", buff[3]);
+	
 	printf("Attribute modified\n");
 }
 

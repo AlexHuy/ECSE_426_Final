@@ -88,12 +88,9 @@ extern ProcData_t proc_data;
 uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB04A1 is used */
 int receive_flag;
 int transmit_flag;
-int new_data_r;
-int counter;
-int ms_counter;
 int button_event;
-uint8_t r_data[10];
-uint8_t t_data[10];
+uint8_t r_data[750];
+uint8_t t_data[250];
 /**
  * @}
  */
@@ -132,22 +129,8 @@ void User_Process(AxesRaw_t* p_axes);
  */
 int main(void)
 {
-
-	t_data[0] = 34;
-	t_data[1] = 52;
-	t_data[2] = 13;
-	t_data[3] = 54;
-	t_data[4] = 75;
-	t_data[5] = 14;
-	t_data[6] = 83;
-	t_data[7] = 45;
-	t_data[8] = 44;
-	t_data[9] = 67;
-	
 	receive_flag = 1;
 	transmit_flag = 1;
-	new_data_r = 0;
-	counter = 0;
 	
   const char *name = "Group11";
   uint8_t SERVER_BDADDR[] = {0x12, 0x34, 0x00, 0xE1, 0x80, 0x03};
@@ -275,24 +258,32 @@ int main(void)
 		
 		if(receive_flag == 1)
 		{
-			USART1_Receive(r_data, 10);
+			USART1_Receive(r_data, 750);
 			receive_flag = 0;
 			printf("Waiting to receive data...\n");
+			for(int i = 0; i < 250; i++)
+			{
+				axes_data.AXIS_X[i] = r_data[i];
+			}
+			for(int i = 0; i < 250; i++)
+			{
+				axes_data.AXIS_Y[i] = r_data[i + 250];
+			}
+			for(int i = 0; i < 250; i++)
+			{
+				axes_data.AXIS_Z[i] = r_data[i + 500];
+			}
 		}
 		
 		if(button_event == 1)
 		{
-		if(transmit_flag == 1)
-		{
-			USART1_Transmit(t_data, 10);
-			transmit_flag = 0;
-			printf("Waiting to finish transmitting data...\n");
-			if(t_data[0] >= 255)
-				t_data[0] = 0;
-			else
-				t_data[0]++;
-		}
-		button_event = 0;
+			if(transmit_flag == 1)
+			{
+				USART1_Transmit(t_data, 750);
+				transmit_flag = 0;
+				printf("Waiting to finish transmitting data...\n");
+			}
+			button_event = 0;
 		}
   }
 }
@@ -310,8 +301,8 @@ void User_Process(AxesRaw_t* p_axes)
     setConnectable();
     set_connectable = FALSE;
   }  
-
-  if(1)
+	  
+  /*if(connected)
 	{
 		if(new_data_r == 1)
 		{
@@ -354,7 +345,7 @@ void User_Process(AxesRaw_t* p_axes)
 			}
 			new_data_r = 0;
 		}
-	}
+	}*/
 }
 
 /**

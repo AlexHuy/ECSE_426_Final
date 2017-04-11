@@ -61,6 +61,7 @@ volatile uint32_t ms_counter = 0;
 extern int button_event;
 extern int receive_flag;
 extern int transmit_flag;
+extern int new_data_r;
 /* SPI handler declared in "main.c" file */
 extern UART_HandleTypeDef huart1;
 extern SPI_HandleTypeDef SpiHandle;
@@ -189,6 +190,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	printf("Received data successfully.\n");
 	receive_flag = 1;
+	new_data_r = 1;
 }
 
 /**

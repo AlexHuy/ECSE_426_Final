@@ -89,7 +89,9 @@ uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB0
 int receive_flag;
 int transmit_flag;
 int button_event;
-uint8_t r_data[750];
+int new_data_r;
+int counter;
+uint8_t r_data[1000];
 uint8_t t_data[250];
 /**
  * @}
@@ -131,6 +133,7 @@ int main(void)
 {
 	receive_flag = 1;
 	transmit_flag = 1;
+	counter = 0;
 	
   const char *name = "Group11";
   uint8_t SERVER_BDADDR[] = {0x12, 0x34, 0x00, 0xE1, 0x80, 0x03};
@@ -253,38 +256,25 @@ int main(void)
 	
   while(1)
   {
-		HCI_Process();
-    User_Process(&axes_data);
-		
 		if(receive_flag == 1)
 		{
-			USART1_Receive(r_data, 750);
+			USART1_Receive(r_data, 1000);
 			receive_flag = 0;
 			printf("Waiting to receive data...\n");
-			for(int i = 0; i < 250; i++)
-			{
-				axes_data.AXIS_X[i] = r_data[i];
-			}
-			for(int i = 0; i < 250; i++)
-			{
-				axes_data.AXIS_Y[i] = r_data[i + 250];
-			}
-			for(int i = 0; i < 250; i++)
-			{
-				axes_data.AXIS_Z[i] = r_data[i + 500];
-			}
 		}
 		
 		if(button_event == 1)
 		{
 			if(transmit_flag == 1)
 			{
-				USART1_Transmit(t_data, 750);
+				USART1_Transmit(t_data, 250);
 				transmit_flag = 0;
 				printf("Waiting to finish transmitting data...\n");
 			}
 			button_event = 0;
 		}
+		HCI_Process();
+    User_Process(&axes_data);
   }
 }
 
@@ -302,40 +292,40 @@ void User_Process(AxesRaw_t* p_axes)
     set_connectable = FALSE;
   }  
 	  
-  /*if(connected)
+  if(1)
 	{
 		if(new_data_r == 1)
 		{
 			if(counter == 0)
 			{
-				for(int i = 0; i < 10; i++)
+				for(int i = 0; i < 1000; i++)
 				{
 					p_axes->AXIS_X[i] = r_data[i];
 				}
 				printf("%d\n", p_axes->AXIS_X[0]);
-				printf("%d\n", p_axes->AXIS_X[9]);
+				printf("%d\n", p_axes->AXIS_X[999]);
 				printf("Copying to x array...\n");
 				counter++;
 			}
 			else if(counter == 1)
 			{
-				for(int i = 0; i < 10; i++)
+				for(int i = 0; i < 1000; i++)
 				{
 					p_axes->AXIS_Y[i] = r_data[i];
 				}
 				printf("%d\n", p_axes->AXIS_Y[0]);
-				printf("%d\n", p_axes->AXIS_Y[9]);
+				printf("%d\n", p_axes->AXIS_Y[999]);
 				printf("Copying to y array...\n");
 				counter++;
 			}
 			else if(counter == 2)
 			{
-				for(int i = 0; i < 10; i++)
+				for(int i = 0; i < 1000; i++)
 				{
 					p_axes->AXIS_Z[i] = r_data[i];
 				}
 				printf("%d\n", p_axes->AXIS_Z[0]);
-				printf("%d\n", p_axes->AXIS_Z[9]);
+				printf("%d\n", p_axes->AXIS_Z[999]);
 				printf("Copying to z array...\n");
 				counter = 0;
 			}
@@ -345,7 +335,7 @@ void User_Process(AxesRaw_t* p_axes)
 			}
 			new_data_r = 0;
 		}
-	}*/
+	}
 }
 
 /**
